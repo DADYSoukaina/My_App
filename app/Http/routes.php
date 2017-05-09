@@ -18,7 +18,7 @@ Route::get('/', function () {
 Route::group(['prefix'=>'api'], function(){
     Route::resource('famille','FamilleController');
 
-    Route::resource('produit','produitController');
+    Route::resource('produit','ProduitController');
 
    /* Route::post('user',[
         'uses' =>'AuthController@store'

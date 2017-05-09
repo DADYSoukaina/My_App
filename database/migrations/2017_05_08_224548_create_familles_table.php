@@ -12,10 +12,11 @@ class CreateFamillesTable extends Migration
      */
     public function up()
     {
+
         Schema::create('familles', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nom');
-            $table->string('des');
+            $table->string('nom')->unique();
+            $table->string('designation');
             $table->timestamps();
         });
     }

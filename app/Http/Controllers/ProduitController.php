@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Produit;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -15,7 +16,21 @@ class ProduitController extends Controller
      */
     public function index()
     {
-        return "it works";
+        $produits= Produit::all();
+
+        /*foreach($produits as $produit)
+        {
+            $produit->view_produit = [
+                'href' => 'api/produit/'.$produit->id,
+                'method' => 'GET'
+            ];
+        }*/
+        $response=[
+            'msg' =>'List of all products',
+            'produits'=>$produits,
+        ];
+
+        return response()->json($response,200);
 
     }
 
@@ -37,7 +52,40 @@ class ProduitController extends Controller
      */
     public function store(Request $request)
     {
-        return "it works";
+        $this->validate($request, [
+            'code_pr' => 'required',
+            'nom' => 'required',
+        ]);
+
+
+        $code = $request->input('code_pr');
+        $nom = $request->input('nom');
+        $famille_id = $request->input('famille_id');
+
+
+
+        $produit = new Produit([
+            'code' => $code,
+            'nom' => $nom,
+            'famille_id' => $famille_id,
+        ]);
+
+        if($produit->save()){
+            $produit->view_produit = [
+                'href'=>'api/produit/'.$produit->id,
+                'method'=>'GET'
+            ];
+            $message=[
+                'msg'=>'Produit created',
+                'produit' => $produit
+            ];
+            return response()->json($message, 201);
+        }
+        $response = [
+            'msg' =>'An error occurred'
+        ];
+
+        return  response()->json($response,404);
 
     }
 
@@ -49,7 +97,14 @@ class ProduitController extends Controller
      */
     public function show($id)
     {
-        //
+        $produits = Produit::where('id',$id)->get();
+        $response=[
+            'msg' =>'Produits  '.$id,
+            'Produits '=>$produits,
+        ];
+
+        return response()->json($response,200);
+
     }
 
     /**
