@@ -17,15 +17,15 @@ class FamilleController extends Controller
     {
         $familles= Famille::all();
 
-       /* foreach($familles as $famille)
+        foreach($familles as $famille)
         {
             $famille->view_famille = [
-                'href' => 'api/famille/'.$famille->id,
+                'href' => '/api/famille/'.$famille->id,
                 'method' => 'GET'
             ];
-        }*/
+        }
         $response=[
-            'msg' =>'la Liste des familles',
+            'msg' =>'List of all families',
             'familles'=>$familles,
         ];
 
@@ -60,20 +60,26 @@ class FamilleController extends Controller
             'designation' => $designation,
         ]);
 
-        //test: famely exist
+        //test: family exist
+        $response = [
+            'msg' =>'Family exist',
+            'view_families'=>[
+                'href'=>'/api/famille',
+                'method'=>'get']
+                ];
             if($famille->where('nom',$nom)->first()){
-                return  response()->json(['Famille existe'], 401);
+                return  response()->json($response, 401);
             };
 
-            //saving famely data to DB
+            //saving family data to DB
             if($famille->save()){
                 $famille->view_famille = [
-                    'href'=>'api/famille/'.$famille->id,
+                    'href'=>'/api/famille/'.$famille->id,
                     'method'=>'GET'
                 ];
             //response
                 $message=[
-                    'msg'=>'Famille created',
+                    'msg'=>'Family created',
                     'famille' => $famille
                 ];
                 return response()->json($message, 201);
@@ -90,12 +96,29 @@ class FamilleController extends Controller
     //get single family & all the products of this family
     public function show($id)
     {
+        //family not found
+        if (! $famille = Famille::find($id)){
+            $response = [
+                'msg' =>'Family not found',
+                'view_families'=>[
+                    'href'=>'/api/famille',
+                    'method'=>'get',]
+            ];
+            return response()->json($response, 401);
+        }
+
+        //show families
         $famille = Famille::where('id',$id)->get();
         $produits=Famille::find($id)->produits()->select('id','code','nom')->get();
 
+        $famille->view_families=[
+            'href'=>'/api/famille',
+            'method'=>'GET'
+        ];
+
         $response=[
-            'msg' =>'Les produits de la famille  '.$id,
-            'Famille '=>$famille,
+            'msg' =>'Family information  ',
+            'Familles '=>$famille,
             'Produits '=>$produits,
         ];
 
@@ -122,12 +145,19 @@ class FamilleController extends Controller
         $nom = $request->input('nom');
         $designation = $request->input('designation');
 
-        $famille=Famille::find($id);
 
-        //test: famely exist
-        if($famille->where('nom',$nom)->first()){
-            return  response()->json(['Family exist'], 401);
-        };
+        //family not found
+        $famille=Famille::find($id);
+        if (! $famille = Famille::find($id)){
+            $response = [
+                'msg' =>'Family not found',
+                'view_families'=>[
+                    'href'=>'/api/famille',
+                    'method'=>'get',]
+            ];
+            return response()->json($response, 401);
+        }
+
 
         //insert to database
         $famille->nom = $nom;
@@ -137,8 +167,8 @@ class FamilleController extends Controller
             return  response()->json(['msg'=>'Error during updating'], 404);
         }
 
-        $famille->view_meeting = [
-            'href'=>'api/famille/'.$famille->id,
+        $famille->view_famille = [
+            'href'=>'/api/famille/'.$famille->id,
             'method'=>'GET'
         ];
 
@@ -154,16 +184,32 @@ class FamilleController extends Controller
     //delete family on server
     public function destroy($id)
     {
+        //family not found
+        $familles= Famille::all();
+        if (! $famille = Famille::find($id)){
+            $response = [
+                'msg' =>'Family not found',
+                'view_families'=>[
+                    'href'=>'/api/famille',
+                    'method'=>'get',]
+                ];
+            return response()->json($response, 401);
+        }
 
         $produits=Produit::where('famille_id',$id)->delete();
         $famille=Famille::find($id);
          $famille->delete();
 
+        $response = [
+            'msg' =>'Family deleted',
+            'create'=>[
+                'href'=>'/api/meeting',
+                'method'=>'POST',
+                'params'=>'nom, designation'
+            ]
+        ];
 
-        return  response()->json(['family deleted!'],200);
 
-
-
-
+        return  response()->json($response,200);
     }
 }
