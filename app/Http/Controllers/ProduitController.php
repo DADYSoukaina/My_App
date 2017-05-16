@@ -60,14 +60,30 @@ class ProduitController extends Controller
 
         $code = $request->input('code_pr');
         $nom = $request->input('nom');
+        $designation = $request->input('designation');
+        $prix_client_final=$request->input('prix_client_final');
+        $prix_client_Distributeur=$request->input('prix_client_Distributeur');
+        $prix_client_intermediaire=$request->input('prix_client_intermediaire');
+        $prix_client_autres=$request->input('prix_client_autres');
         $famille_id = $request->input('famille_id');
+        $quantite_minimale = $request->input('quantite_minimale');
+        $unite = $request->input('unite');
 
 
 
         $produit = new Produit([
             'code' => $code,
             'nom' => $nom,
+            'des' => $designation,
+            'pr_cl_fi' => $prix_client_final,
+            'pr_cl_Di' => $prix_client_Distributeur,
+            'pr_cl_in' => $prix_client_intermediaire,
+            'pr_cl_au' => $prix_client_autres,
             'famille_id' => $famille_id,
+            'quan_mi' => $quantite_minimale,
+            'unite' => $unite,
+
+
         ]);
 
         //Family not exist
@@ -182,7 +198,14 @@ class ProduitController extends Controller
 
         $code = $request->input('code_pr');
         $nom = $request->input('nom');
+        $designation = $request->input('designation');
+        $prix_client_final=$request->input('prix_client_final');
+        $prix_client_Distributeur=$request->input('prix_client_Distributeur');
+        $prix_client_intermediaire=$request->input('prix_client_intermediaire');
+        $prix_client_autres=$request->input('prix_client_autres');
         $famille_id = $request->input('famille_id');
+        $quantite_minimale = $request->input('quantite_minimale');
+        $unite = $request->input('unite');
 
         //Product not found
         if (! $produit = Produit::find($id)){
@@ -210,7 +233,15 @@ class ProduitController extends Controller
 
         $produit->code=$code;
         $produit->nom=$nom;
+        $produit->des=$designation;
+        $produit->pr_cl_fi=$prix_client_final;
+        $produit->pr_cl_Di=$prix_client_Distributeur;
+        $produit->pr_cl_in=$prix_client_intermediaire;
+        $produit->pr_cl_au=$prix_client_autres;
+        $produit->quan_mi=$quantite_minimale;
+        $produit->unite=$unite;
         $produit->famille_id=$famille_id;
+
 
         //update database
         if($produit->update()){
